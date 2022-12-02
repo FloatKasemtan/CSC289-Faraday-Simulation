@@ -2,6 +2,9 @@
   import svelteLogo from './assets/svelte.svg'
   import Counter from './lib/Counter.svelte'
   import interact from 'interactjs'
+  import { FaradayLaw } from './utils/faradayLaw';
+
+  let x1, y1 = 0
 
   interact('.draggable').draggable({
     inertia: true,
@@ -38,6 +41,27 @@
     // translate the element
     target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
     console.log(x,y);
+
+    console.log(FaradayLaw({
+    loop: 50,
+    time: 0.10,
+    changeInFlux: {
+        magneticField: {
+            xBefore: x1,
+            xAfter: x,
+            yBefore: y1,
+            yAfter: y
+        },
+        area: {
+            width: 0.2,
+            height: 0.2
+        },
+        angle: 0
+    }
+}))
+
+ x1 = x
+ y1 = y
     
     // update the posiion attributes
     target.setAttribute('data-x', x)
