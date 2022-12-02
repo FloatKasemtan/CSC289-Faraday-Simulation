@@ -92,7 +92,7 @@
       <div class="red" />
       <div class="blue" />
     </div>
-    <div style="background-color: red; position: absolute; top: 1000px; left: 1000px; width: 10px; height: 10px;"/>
+    <div style="background-color: red; position: absolute; top: 500px; left: 1000px; width: 10px; height: 10px;"/>
     emf: {emf}
     time: {time}
   </div>
