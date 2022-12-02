@@ -3,8 +3,43 @@
   import Counter from './lib/Counter.svelte'
   import interact from 'interactjs'
   import { FaradayLaw } from './utils/faradayLaw';
+  import { onMount } from 'svelte';
 
-  let x1, y1 = 0
+  let x1, y1, x2, y2 = 0
+  let emf: number = 0
+  let time = 0
+
+  onMount(() => {
+    setInterval(() => {
+      time += 0.1
+      emf = FaradayLaw({
+    loop: 5,
+    time: 0.1,
+    changeInFlux: {
+        magneticField: {
+            xBefore: x1,
+            xAfter: x2,
+            yBefore: y1,
+            yAfter: y2
+        },
+        area: {
+            width: 0.2,
+            height: 0.2
+        },
+        angle: 0
+    }
+  })[0]
+
+    }, 100)
+    interact('.draggable')
+      .draggable({
+        listeners: {
+          move: dragMoveListener,
+        },
+        inertia: true,
+      })
+  })
+
 
   interact('.draggable').draggable({
     inertia: true,
@@ -38,30 +73,12 @@
     var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
     var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
 
+    x1 = x2
+    y1 = y2
+    x2 = x
+    y2 = y
     // translate the element
     target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
-    console.log(x,y);
-
-    console.log(FaradayLaw({
-    loop: 50,
-    time: 0.10,
-    changeInFlux: {
-        magneticField: {
-            xBefore: x1,
-            xAfter: x,
-            yBefore: y1,
-            yAfter: y
-        },
-        area: {
-            width: 0.2,
-            height: 0.2
-        },
-        angle: 0
-    }
-}))
-
- x1 = x
- y1 = y
     
     // update the posiion attributes
     target.setAttribute('data-x', x)
@@ -75,6 +92,9 @@
       <div class="red" />
       <div class="blue" />
     </div>
+    <div style="background-color: red; position: absolute; top: 1000px; left: 1000px; width: 10px; height: 10px;"/>
+    emf: {emf}
+    time: {time}
   </div>
   
 </main>
