@@ -20,6 +20,7 @@
     "vite": "^3.2.3"
   },
   "dependencies": {
+    "apexcharts": "^3.36.3",
     "interactjs": "^1.10.17"
   }
 }

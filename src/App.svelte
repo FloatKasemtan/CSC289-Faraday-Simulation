@@ -1,23 +1,78 @@
 <script lang="ts">
-  import svelteLogo from "./assets/svelte.svg";
-  import Counter from "./lib/Counter.svelte";
-  import interact from "interactjs";
-  import { FaradayLaw } from "./utils/faradayLaw";
-  import { onMount } from "svelte";
+  import svelteLogo from './assets/svelte.svg'
+  import Counter from './lib/Counter.svelte'
+  import interact from 'interactjs'
+  import { FaradayLaw } from './utils/faradayLaw';
+  import { onMount } from 'svelte';
+  import ApexCharts from 'apexcharts'
 
-  let x1,
-    y1,
-    x2,
-    y2 = 0;
-  let emf: number = 0;
-  let time = 0;
+  let x1, y1, x2, y2 = 0
+  let emf: number = 0
+  let time = 0
+  let array = [0]
 
   onMount(() => {
+
+  var options = {
+          series: [{
+          data: array.slice()
+        }],
+          chart: {
+          id: 'realtime',
+          animations: {
+            enabled: false,
+            speed: 1000,
+            dynamicAnimation: {
+              enabled: true,
+              speed: 350
+            }
+          },
+          height: 350,
+          type: 'line',
+          toolbar: {
+            show: false
+          },
+          zoom: {
+            enabled: false
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stoke: {
+          curve: 'smooth'
+        },
+        title: {
+          text: 'Dynamic Updating Chart',
+          align: 'left'
+        },
+        markers: {
+          size: 0
+        },
+        xaxis: {
+          type: "numeric",
+          range: 150,
+          labels: {
+            show: false
+          }
+        },
+        yaxis: {
+          max: 500,
+          min: -500
+        },
+        legend: {
+          show: false
+        },
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+      
     setInterval(() => {
-      time += 0.1;
-      emf = FaradayLaw({
+      time += 0.01;
+      emf = parseInt(FaradayLaw({
         loop: 5,
-        time: 0.1,
+        time: 0.01,
         changeInFlux: {
           magneticField: {
             xBefore: x1,
@@ -31,8 +86,17 @@
           },
           angle: 0,
         },
-      })[0];
-    }, 100);
+      })[0].toFixed(2));
+      if (array.length > 150) {
+        array.shift()
+      }
+
+      array = [...array, emf]
+      chart.updateSeries([{
+        data: array
+      }])
+    }, 10);
+
     interact(".draggable").draggable({
       listeners: {
         move: dragMoveListener,
@@ -40,6 +104,7 @@
       inertia: true,
     });
   });
+
 
   interact(".draggable").draggable({
     inertia: true,
@@ -91,6 +156,7 @@
 
 <main>
   <div class="container">
+    <div id="chart"></div>
     <div class="draggable magnet">
       <div class="oval" />
       <div class="oval2" />

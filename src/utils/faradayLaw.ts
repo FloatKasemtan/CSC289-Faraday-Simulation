@@ -19,14 +19,6 @@ export const MagneticFieldCalculation = (
   const b1 = (4 * Math.PI * Math.pow(10, -7) * 10 ** 9) / (r1 * 2 * Math.PI);
   const b2 = (4 * Math.PI * Math.pow(10, -7) * 10 ** 9) / (r2 * 2 * Math.PI);
   const result = b2 - b1;
-  console.log("position1", position1);
-  console.log("position2", position2);
-  console.log("r1", r1);
-  console.log("r2", r2);
-
-  console.log("b1", b1);
-  console.log("b2", b2);
-  console.log(result);
 
   return result;
 };
