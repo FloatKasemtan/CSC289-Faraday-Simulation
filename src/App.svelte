@@ -152,26 +152,39 @@
     target.setAttribute("data-x", x);
     target.setAttribute("data-y", y);
   }
+
+  let polarity = 'ns'
+  let showFieldline = false
+
+  function switchPolarity() {
+    if (polarity === 'ns') {
+      polarity = 'sn'
+    } else {
+      polarity = 'ns'
+    }
+  }
+
+  function toggleFieldline() {
+    showFieldline = !showFieldline
+  }
+
 </script>
 
 <main>
   <div class="container">
     <div id="chart"></div>
-    <div class="draggable magnet">
-      <div class="oval" />
-      <div class="oval2" />
-      <div class="oval3" />
-      <div class="oval4" />
-      <div class="magnet">
-        <div class="red" />
-        <div class="blue" />
-      </div>
-    </div>
+    <div class="draggable magnet {polarity} {showFieldline ? 'with-fieldline' : null}" />
     <div
       style="background-color: red; position: absolute; top: 500px; left: 1000px; width: 10px; height: 10px;"
     />
     emf: {emf}
     time: {time}
+    <br/>
+    <button on:click={switchPolarity}>Switch magnet polarity</button>
+    <label for="fieldline-checkbox">
+      <input type="checkbox" id="fieldline-checkbox" value={showFieldline} on:change={toggleFieldline} />
+      Fieldline
+    </label>
   </div>
 </main>
 
@@ -185,56 +198,31 @@
   }
   .magnet {
     display: flex;
-    width: 200px;
-    height: 50px;
-    justify-content: center;
+    width: 256px;
+    height: 64px;
+    transform-style: preserve-3d; /* Required to make fieldline behind the magnet */
   }
-  .red {
-    flex: 1;
-    background-color: red;
-  }
-  .blue {
-    flex: 1;
-    background-color: blue;
+  
+  .magnet.ns {
+    background-image: url('magnet-ns.png');
   }
 
-  .oval {
-    width: 200px;
-    height: 70px;
-    border: 1px solid black;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    z-index: -1;
+  .magnet.sn {
+    background-image: url('magnet-sn.png');
   }
 
-  .oval2 {
-    width: 200px;
-    height: 70px;
-    border: 1px solid black;
-    border-radius: 50%;
+  .magnet.with-fieldline::after {
     position: absolute;
-    bottom: 50%;
-    z-index: -1;
+    top: -480px; /* -512px + 32px) */
+    left: -384px; /* -512px + 128px */
+    transform: translateZ(-1px); /* Required to make fieldline behind the magnet */
   }
 
-  .oval3 {
-    width: 400px;
-    height: 150px;
-    border: 1px solid black;
-    border-radius: 50%;
-    position: absolute;
-    bottom: 50%;
-    z-index: -1;
+  .magnet.ns.with-fieldline::after {
+    content: url('fieldline-ns.png');
   }
 
-  .oval4 {
-    width: 400px;
-    height: 150px;
-    border: 1px solid black;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    z-index: -1;
+  .magnet.sn.with-fieldline::after {
+    content: url('fieldline-sn.png');
   }
 </style>
