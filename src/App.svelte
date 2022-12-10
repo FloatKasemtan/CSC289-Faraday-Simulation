@@ -10,6 +10,9 @@
   let emf: number = 0
   let time = 0
   let array = [0]
+  let angle = 0
+  let polarity = 'ns'
+  let showFieldline = false
 
   onMount(() => {
 
@@ -43,7 +46,7 @@
           curve: 'smooth'
         },
         title: {
-          text: 'Dynamic Updating Chart',
+          text: 'Voltage chart',
           align: 'left'
         },
         markers: {
@@ -81,17 +84,20 @@
             yAfter: y2,
           },
           area: {
-            width: 0.2,
-            height: 0.2,
+            width: 0.4,
+            height: 0.4,
           },
-          angle: 0,
+          angle: angle,
         },
       })[0].toFixed(2));
       if (array.length > 150) {
         array.shift()
       }
-
-      array = [...array, emf]
+      if (polarity === 'ns') {
+        array = [...array, -emf]
+      }else {
+        array = [...array, emf]
+      }
       chart.updateSeries([{
         data: array
       }])
@@ -151,10 +157,8 @@
     // update the posiion attributes
     target.setAttribute("data-x", x);
     target.setAttribute("data-y", y);
+    getAngle()
   }
-
-  let polarity = 'ns'
-  let showFieldline = false
 
   function switchPolarity() {
     if (polarity === 'ns') {
@@ -168,17 +172,25 @@
     showFieldline = !showFieldline
   }
 
+  function getAngle() {  
+    var temp = Math.atan2( 500 - (y1+ 64/2), 1000 -(x1+256/2)) * ( 180 / Math.PI )
+    if (temp < 0) temp = 360 + temp; // range [0, 360)
+    angle = temp
+    
+  }
+
 </script>
 
 <main>
   <div class="container">
-    <div id="chart"></div>
+    <div id="chart" style="position: absolute; right: 20px; width: 500px;"></div>
     <div class="draggable magnet {polarity} {showFieldline ? 'with-fieldline' : null}" />
     <div
       style="background-color: red; position: absolute; top: 500px; left: 1000px; width: 10px; height: 10px;"
     />
     emf: {emf}
-    time: {time}
+    time: {Math.round(time)}
+    angle: {angle}
     <br/>
     <button on:click={switchPolarity}>Switch magnet polarity</button>
     <label for="fieldline-checkbox">
