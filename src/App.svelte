@@ -1,10 +1,16 @@
 <script lang="ts">
-  import svelteLogo from "./assets/svelte.svg";
-  import Counter from "./lib/Counter.svelte";
   import interact from "interactjs";
   import { FaradayLaw } from "./utils/faradayLaw";
   import { onMount } from "svelte";
   import ApexCharts from "apexcharts";
+  import emfIcon from "/lightning.png";
+  import timeIcon from "/clock.png";
+  import angleIcon from "/angle.png";
+  import coilPic from "/coil.png";
+  import magnetNS from "/magnet-ns.png";
+  import magnetSN from "/magnet-sn.png";
+  import fieldlineNS from "/fieldline-ns.png";
+  import fieldlineSN from "/fieldline-sn.png";
 
   let x1,
     y1,
@@ -190,25 +196,40 @@
 <main>
   <div class="container">
     <div id="chart" class="chart" />
-    <div
+    <!-- <div
       class="draggable magnet {polarity} {showFieldline
         ? 'with-fieldline'
         : null}"
-    />
-    <div class="coil" />
+    /> -->
+    <div class="draggable magnet">
+      <img
+        src={polarity === "ns" ? magnetNS : magnetSN}
+        style="z-index: 1;"
+        alt="magnet-ns"
+        class="magnet"
+      />
+      {#if showFieldline}
+        <img
+          style="position: absolute; width: 700px; translate: -32% -45%;"
+          src={polarity === "sn" ? fieldlineSN : fieldlineNS}
+          alt="FSN"
+        />
+      {/if}
+    </div>
+    <img class="coil" src={coilPic} alt="coil" />
     <div class="details">
       <div class="sub-detail">
-        <div class="emf icon" />
+        <img src={emfIcon} alt="emf" class="icon" />
         <span style="font-weight: 600;">emf: &nbsp;</span>
         {emf} volt
       </div>
       <div class="sub-detail">
-        <div class="time icon" />
+        <img src={timeIcon} alt="clock" class="icon" />
         <span style="font-weight: 600;">time: &nbsp;</span>
         {Math.round(time)} seconds
       </div>
       <div class="sub-detail">
-        <div class="angle icon" />
+        <img src={angleIcon} alt="angle" class="icon" />
         <span style="font-weight: 600;">angle: &nbsp;</span>
         {angle.toFixed(0)} degrees
       </div>
@@ -249,31 +270,6 @@
     transform-style: preserve-3d; /* Required to make fieldline behind the magnet */
   }
 
-  .magnet.ns {
-    background-image: url("magnet-ns.png");
-  }
-
-  .magnet.sn {
-    background-image: url("magnet-sn.png");
-  }
-
-  .magnet.with-fieldline::after {
-    position: absolute;
-    top: -480px; /* -512px + 32px) */
-    left: -384px; /* -512px + 128px */
-    transform: translateZ(
-      -1px
-    ); /* Required to make fieldline behind the magnet */
-  }
-
-  .magnet.ns.with-fieldline::after {
-    content: url("fieldline-ns.png");
-  }
-
-  .magnet.sn.with-fieldline::after {
-    content: url("fieldline-sn.png");
-  }
-
   .details {
     width: 300px;
     height: 140px;
@@ -297,31 +293,16 @@
   .icon {
     height: 35px;
     width: 35px;
-  }
-
-  .emf {
-    content: url("lightning.png");
     margin-right: 10px;
   }
 
   .coil {
-    content: url("coil.png");
     position: absolute;
     top: 500px;
     left: 750px;
     translate: -50% -50%;
     width: 300px;
     height: 200px;
-  }
-
-  .time {
-    content: url("clock.png");
-    margin-right: 10px;
-  }
-
-  .angle {
-    content: url("angle.png");
-    margin-right: 10px;
   }
 
   .button {
