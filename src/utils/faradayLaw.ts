@@ -9,7 +9,7 @@ export const MagneticFieldCalculation = (
 ): number => {
   const { xAfter, yAfter, xBefore, yBefore } = data;
   //   const result = xAfter - xBefore - (yAfter - yBefore);
-  const coilPosition = [1000, 500];
+  const coilPosition = [750, 500];
   const position1 = [xBefore - coilPosition[0], yBefore - coilPosition[1]];
   const r1 =
     Math.sqrt(Math.pow(position1[0], 2) + Math.pow(position1[1], 2)) / 10;

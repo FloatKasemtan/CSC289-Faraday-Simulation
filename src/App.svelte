@@ -1,106 +1,114 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import Counter from './lib/Counter.svelte'
-  import interact from 'interactjs'
-  import { FaradayLaw } from './utils/faradayLaw';
-  import { onMount } from 'svelte';
-  import ApexCharts from 'apexcharts'
+  import svelteLogo from "./assets/svelte.svg";
+  import Counter from "./lib/Counter.svelte";
+  import interact from "interactjs";
+  import { FaradayLaw } from "./utils/faradayLaw";
+  import { onMount } from "svelte";
+  import ApexCharts from "apexcharts";
 
-  let x1, y1, x2, y2 = 0
-  let emf: number = 0
-  let time = 0
-  let array = [0]
-  let angle = 0
-  let polarity = 'ns'
-  let showFieldline = false
+  let x1,
+    y1,
+    x2,
+    y2 = 0;
+  let emf: number = 0;
+  let time = 0;
+  let array = [0];
+  let angle = 0;
+  let polarity = "ns";
+  let showFieldline = false;
 
   onMount(() => {
-
-  var options = {
-          series: [{
-          data: array.slice()
-        }],
-          chart: {
-          id: 'realtime',
-          animations: {
-            enabled: false,
-            speed: 1000,
-            dynamicAnimation: {
-              enabled: true,
-              speed: 350
-            }
+    var options = {
+      series: [
+        {
+          data: array.slice(),
+        },
+      ],
+      chart: {
+        id: "realtime",
+        animations: {
+          enabled: false,
+          speed: 1000,
+          dynamicAnimation: {
+            enabled: true,
+            speed: 350,
           },
-          height: 350,
-          type: 'line',
-          toolbar: {
-            show: false
-          },
-          zoom: {
-            enabled: false
-          }
         },
-        dataLabels: {
-          enabled: false
+        height: 350,
+        type: "line",
+        toolbar: {
+          show: false,
         },
-        stoke: {
-          curve: 'smooth'
+        zoom: {
+          enabled: false,
         },
-        title: {
-          text: 'Voltage chart',
-          align: 'left'
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stoke: {
+        curve: "smooth",
+      },
+      title: {
+        text: "Voltage chart",
+        align: "left",
+      },
+      markers: {
+        size: 0,
+      },
+      xaxis: {
+        type: "numeric",
+        range: 150,
+        labels: {
+          show: false,
         },
-        markers: {
-          size: 0
-        },
-        xaxis: {
-          type: "numeric",
-          range: 150,
-          labels: {
-            show: false
-          }
-        },
-        yaxis: {
-          max: 500,
-          min: -500
-        },
-        legend: {
-          show: false
-        },
-        };
+      },
+      yaxis: {
+        max: 500,
+        min: -500,
+      },
+      legend: {
+        show: false,
+      },
+    };
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
-      
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+
     setInterval(() => {
       time += 0.01;
-      emf = parseInt(FaradayLaw({
-        loop: 5,
-        time: 0.01,
-        changeInFlux: {
-          magneticField: {
-            xBefore: x1,
-            xAfter: x2,
-            yBefore: y1,
-            yAfter: y2,
+      emf = parseInt(
+        FaradayLaw({
+          loop: 5,
+          time: 0.01,
+          changeInFlux: {
+            magneticField: {
+              xBefore: x1,
+              xAfter: x2,
+              yBefore: y1,
+              yAfter: y2,
+            },
+            area: {
+              width: 0.4,
+              height: 0.4,
+            },
+            angle: angle,
           },
-          area: {
-            width: 0.4,
-            height: 0.4,
-          },
-          angle: angle,
-        },
-      })[0].toFixed(2));
+        })[0].toFixed(2)
+      );
       if (array.length > 150) {
-        array.shift()
+        array.shift();
       }
-      if (polarity === 'ns') {
-        array = [...array, -emf]
-      }else {
-        array = [...array, emf]
+      if (polarity === "ns") {
+        array = [...array, -emf];
+      } else {
+        array = [...array, emf];
       }
-      chart.updateSeries([{
-        data: array
-      }])
+      chart.updateSeries([
+        {
+          data: array,
+        },
+      ]);
     }, 10);
 
     interact(".draggable").draggable({
@@ -110,7 +118,6 @@
       inertia: true,
     });
   });
-
 
   interact(".draggable").draggable({
     inertia: true,
@@ -157,46 +164,70 @@
     // update the posiion attributes
     target.setAttribute("data-x", x);
     target.setAttribute("data-y", y);
-    getAngle()
+    getAngle();
   }
 
   function switchPolarity() {
-    if (polarity === 'ns') {
-      polarity = 'sn'
+    if (polarity === "ns") {
+      polarity = "sn";
     } else {
-      polarity = 'ns'
+      polarity = "ns";
     }
   }
 
   function toggleFieldline() {
-    showFieldline = !showFieldline
+    showFieldline = !showFieldline;
   }
 
-  function getAngle() {  
-    var temp = Math.atan2( 500 - (y1+ 64/2), 1000 -(x1+256/2)) * ( 180 / Math.PI )
+  function getAngle() {
+    var temp =
+      Math.atan2(500 - (y1 + 64 / 2), 750 - (x1 + 256 / 2)) * (180 / Math.PI);
     if (temp < 0) temp = 360 + temp; // range [0, 360)
-    angle = temp
-    
+    angle = temp;
   }
-
 </script>
 
 <main>
   <div class="container">
-    <div id="chart" style="position: absolute; right: 20px; width: 500px;"></div>
-    <div class="draggable magnet {polarity} {showFieldline ? 'with-fieldline' : null}" />
+    <div id="chart" class="chart" />
     <div
-      style="background-color: red; position: absolute; top: 500px; left: 1000px; width: 10px; height: 10px;"
+      class="draggable magnet {polarity} {showFieldline
+        ? 'with-fieldline'
+        : null}"
     />
-    emf: {emf}
-    time: {Math.round(time)}
-    angle: {angle}
-    <br/>
-    <button on:click={switchPolarity}>Switch magnet polarity</button>
-    <label for="fieldline-checkbox">
-      <input type="checkbox" id="fieldline-checkbox" value={showFieldline} on:change={toggleFieldline} />
-      Fieldline
-    </label>
+    <div class="coil" />
+    <div class="details">
+      <div class="sub-detail">
+        <div class="emf icon" />
+        <span style="font-weight: 600;">emf: &nbsp;</span>
+        {emf} volt
+      </div>
+      <div class="sub-detail">
+        <div class="time icon" />
+        <span style="font-weight: 600;">time: &nbsp;</span>
+        {Math.round(time)} seconds
+      </div>
+      <div class="sub-detail">
+        <div class="angle icon" />
+        <span style="font-weight: 600;">angle: &nbsp;</span>
+        {angle.toFixed(0)} degrees
+      </div>
+    </div>
+    <div class="checkbox-container">
+      <div class="toggle-pill-color">
+        <input
+          type="checkbox"
+          id="pill3"
+          name="check"
+          on:change={toggleFieldline}
+        />
+        <label for="pill3" />
+      </div>
+      <span style="font-size: 1.2rem; font-weight: 500;">Show fieldline</span>
+    </div>
+    <button class="button" on:click={switchPolarity}
+      >Switch magnet polarity</button
+    >
   </div>
 </main>
 
@@ -207,6 +238,9 @@
     width: 100vw;
     height: 100vh;
     padding: 0;
+    background-color: #eff5f5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   }
   .magnet {
     display: flex;
@@ -214,27 +248,169 @@
     height: 64px;
     transform-style: preserve-3d; /* Required to make fieldline behind the magnet */
   }
-  
+
   .magnet.ns {
-    background-image: url('magnet-ns.png');
+    background-image: url("magnet-ns.png");
   }
 
   .magnet.sn {
-    background-image: url('magnet-sn.png');
+    background-image: url("magnet-sn.png");
   }
 
   .magnet.with-fieldline::after {
     position: absolute;
     top: -480px; /* -512px + 32px) */
     left: -384px; /* -512px + 128px */
-    transform: translateZ(-1px); /* Required to make fieldline behind the magnet */
+    transform: translateZ(
+      -1px
+    ); /* Required to make fieldline behind the magnet */
   }
 
   .magnet.ns.with-fieldline::after {
-    content: url('fieldline-ns.png');
+    content: url("fieldline-ns.png");
   }
 
   .magnet.sn.with-fieldline::after {
-    content: url('fieldline-sn.png');
+    content: url("fieldline-sn.png");
+  }
+
+  .details {
+    width: 300px;
+    height: 140px;
+    display: flex;
+    font-size: 1.7rem;
+    border-radius: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    margin-left: 20px;
+    margin-top: 20px;
+    padding: 20px;
+    display: flex;
+    background-color: white;
+    flex-direction: column;
+  }
+
+  .sub-detail {
+    display: flex;
+    margin: 5px;
+  }
+
+  .icon {
+    height: 35px;
+    width: 35px;
+  }
+
+  .emf {
+    content: url("lightning.png");
+    margin-right: 10px;
+  }
+
+  .coil {
+    content: url("coil.png");
+    position: absolute;
+    top: 500px;
+    left: 750px;
+    translate: -50% -50%;
+    width: 300px;
+    height: 200px;
+  }
+
+  .time {
+    content: url("clock.png");
+    margin-right: 10px;
+  }
+
+  .angle {
+    content: url("angle.png");
+    margin-right: 10px;
+  }
+
+  .button {
+    margin-top: 20px;
+    background-color: #13aa52;
+    border: 1px solid #13aa52;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    height: 50px;
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-left: 20px;
+    outline: none;
+    outline: 0;
+    padding: 10px 25px;
+    text-align: center;
+    transform: translateY(0);
+    transition: transform 150ms, box-shadow 150ms;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+
+  .button:hover {
+    box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0;
+    transform: translateY(-2px);
+  }
+
+  .toggle-pill-color input[type="checkbox"] {
+    display: none;
+  }
+  .toggle-pill-color input[type="checkbox"] + label {
+    display: block;
+    position: relative;
+    width: 3em;
+    height: 1.6em;
+    margin: 20px;
+    border-radius: 1em;
+    background: #e84d4d;
+    box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    -webkit-transition: background 0.1s ease-in-out;
+    transition: background 0.1s ease-in-out;
+  }
+  .toggle-pill-color input[type="checkbox"] + label:before {
+    content: "";
+    display: block;
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 1em;
+    background: #fff;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    left: 0.2em;
+    top: 0.2em;
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+  }
+  .toggle-pill-color input[type="checkbox"]:checked + label {
+    background: #47cf73;
+  }
+  .toggle-pill-color input[type="checkbox"]:checked + label:before {
+    box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
+    left: 1.6em;
+  }
+
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    width: 340px;
+    height: 70px;
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-top: 20px;
+    background-color: white;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  }
+
+  .chart {
+    position: absolute;
+    margin: 20px;
+    right: 0;
+    width: 550px;
+    padding: 20px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    background-color: white;
+    border-radius: 10px;
   }
 </style>
