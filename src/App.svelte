@@ -70,8 +70,8 @@
         },
       },
       yaxis: {
-        max: 500,
-        min: -500,
+        max: 300,
+        min: -300,
       },
       legend: {
         show: false,
